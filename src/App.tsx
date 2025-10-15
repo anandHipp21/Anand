@@ -1,10 +1,27 @@
 import { useState } from 'react';
-import { Vote, Shield, CheckCircle, FileText, Mail, Menu, X, Lock, Users, Globe, Clock, Leaf, Phone, Fingerprint, Scan, MapPin, CreditCard, AlertTriangle, ShieldCheck, Eye, Monitor } from 'lucide-react';
+import { Vote, Shield, CheckCircle, FileText, Mail, Menu, X, Lock, Users, Globe, Clock, Leaf, Phone, Fingerprint, Scan, MapPin, CreditCard, AlertTriangle, ShieldCheck, Eye, Monitor, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [showRegistration, setShowRegistration] = useState(false);
+  const [registrationStep, setRegistrationStep] = useState(1);
+  const [registrationData, setRegistrationData] = useState({
+    fullName: '',
+    aadhaar: '',
+    pan: '',
+    phone: '',
+    email: '',
+    dob: '',
+    voterId: '',
+    address: '',
+    state: '',
+    constituency: '',
+  });
+  const [otp, setOtp] = useState('');
+  const [showOtpVerification, setShowOtpVerification] = useState(false);
+  const [registrationComplete, setRegistrationComplete] = useState(false);
 
   const navigation = [
     { id: 'home', label: 'Home' },
@@ -16,16 +33,74 @@ function App() {
     { id: 'contact', label: 'Contact' },
   ];
 
+  const states = [
+    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+    'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+    'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+    'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+    'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+    'Delhi', 'Puducherry', 'Jammu and Kashmir', 'Ladakh'
+  ];
+
+  const constituencies = {
+    'Delhi': ['New Delhi', 'Chandni Chowk', 'North East Delhi', 'East Delhi', 'South Delhi', 'West Delhi', 'North West Delhi'],
+    'Maharashtra': ['Mumbai North', 'Mumbai South', 'Mumbai North West', 'Pune', 'Nagpur', 'Thane'],
+    'Karnataka': ['Bangalore North', 'Bangalore South', 'Bangalore Central', 'Mysore', 'Mangalore'],
+    'Tamil Nadu': ['Chennai North', 'Chennai South', 'Chennai Central', 'Coimbatore', 'Madurai'],
+    'default': ['Select state first to view constituencies']
+  };
+
   const handleNavClick = (sectionId: string) => {
     setActiveSection(sectionId);
     setMobileMenuOpen(false);
+    setShowRegistration(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleRegistrationClick = () => {
+    setShowRegistration(true);
+    setRegistrationStep(1);
+    setRegistrationComplete(false);
+    setShowOtpVerification(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleRegistrationInputChange = (field: string, value: string) => {
+    setRegistrationData({ ...registrationData, [field]: value });
+  };
+
+  const handleNextStep = () => {
+    if (registrationStep < 3) {
+      setRegistrationStep(registrationStep + 1);
+    } else if (registrationStep === 3) {
+      setShowOtpVerification(true);
+      alert('Dummy OTP sent to ' + registrationData.phone + ': 123456');
+    }
+  };
+
+  const handlePreviousStep = () => {
+    if (registrationStep > 1) {
+      setRegistrationStep(registrationStep - 1);
+    }
+  };
+
+  const handleOtpVerification = () => {
+    if (otp === '123456') {
+      setRegistrationComplete(true);
+      setShowOtpVerification(false);
+    } else {
+      alert('Invalid OTP. Please use: 123456 (Dummy OTP)');
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert('Thank you for your message. We will get back to you soon!');
     setFormData({ name: '', email: '', message: '' });
+  };
+
+  const getConstituenciesForState = (state: string) => {
+    return constituencies[state as keyof typeof constituencies] || constituencies.default;
   };
 
   return (
@@ -100,16 +175,16 @@ function App() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
-                    onClick={() => handleNavClick('how-it-works')}
+                    onClick={handleRegistrationClick}
                     className="bg-gradient-to-r from-blue-600 to-gray-800 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 animate-fadeInUp delay-200"
                   >
-                    Get Started
+                    Register to Vote
                   </button>
                   <button
-                    onClick={() => handleNavClick('security')}
+                    onClick={() => handleNavClick('how-it-works')}
                     className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-300 border-2 border-blue-600 hover:border-blue-700 hover:scale-105 animate-fadeInUp delay-300"
                   >
-                    Learn About Security
+                    How It Works
                   </button>
                 </div>
               </div>
@@ -905,6 +980,406 @@ function App() {
                     </form>
                   </div>
                 </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {showRegistration && (
+          <section className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 py-12">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-gray-800 px-8 py-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Shield className="h-8 w-8 text-white" />
+                      <div>
+                        <h2 className="text-2xl md:text-3xl font-bold text-white">E-Voting Registration</h2>
+                        <p className="text-blue-100 text-sm">Government of India | Election Commission</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowRegistration(false)}
+                      className="text-white hover:bg-white/20 p-2 rounded-lg transition-all"
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
+                  </div>
+                </div>
+
+                {!registrationComplete && !showOtpVerification && (
+                  <>
+                    <div className="bg-gray-50 px-8 py-4 border-b border-gray-200">
+                      <div className="flex items-center justify-center space-x-2 text-sm">
+                        <Lock className="h-4 w-4 text-green-600" />
+                        <span className="text-gray-700 font-semibold">Protected by Government Digital Security Standards</span>
+                      </div>
+                    </div>
+
+                    <div className="px-8 py-6">
+                      <div className="flex justify-between items-center mb-8">
+                        {[1, 2, 3].map((step) => (
+                          <div key={step} className="flex items-center">
+                            <div
+                              className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                                registrationStep >= step
+                                  ? 'bg-gradient-to-r from-blue-600 to-gray-800 text-white'
+                                  : 'bg-gray-200 text-gray-500'
+                              }`}
+                            >
+                              {step}
+                            </div>
+                            {step < 3 && (
+                              <div
+                                className={`h-1 w-20 md:w-32 mx-2 transition-all ${
+                                  registrationStep > step ? 'bg-blue-600' : 'bg-gray-200'
+                                }`}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 animate-fadeInUp">
+                        <div className="flex items-start space-x-3">
+                          <ShieldCheck className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm text-gray-700">
+                            <strong>Security Assurance:</strong> Your personal information is encrypted and securely transmitted to authorized government servers. All data is protected under the Information Technology Act, 2000.
+                          </p>
+                        </div>
+                      </div>
+
+                      <form className="space-y-6">
+                        {registrationStep === 1 && (
+                          <div className="space-y-5 animate-fadeInUp">
+                            <h3 className="text-xl font-bold text-gray-900 mb-4">Personal Information</h3>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Full Name (as per Aadhaar) *
+                              </label>
+                              <input
+                                type="text"
+                                required
+                                value={registrationData.fullName}
+                                onChange={(e) => handleRegistrationInputChange('fullName', e.target.value)}
+                                placeholder="Enter your full name"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Aadhaar Number *
+                              </label>
+                              <input
+                                type="text"
+                                required
+                                value={registrationData.aadhaar}
+                                onChange={(e) => handleRegistrationInputChange('aadhaar', e.target.value)}
+                                placeholder="XXXX XXXX XXXX (Demo: 1234 5678 9012)"
+                                maxLength={14}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                              />
+                              <p className="text-xs text-gray-500 mt-1">Demo Mode: Use 1234 5678 9012</p>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                PAN Card Number *
+                              </label>
+                              <input
+                                type="text"
+                                required
+                                value={registrationData.pan}
+                                onChange={(e) => handleRegistrationInputChange('pan', e.target.value.toUpperCase())}
+                                placeholder="ABCDE1234F (Demo: DEMO12345P)"
+                                maxLength={10}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                              />
+                              <p className="text-xs text-gray-500 mt-1">Demo Mode: Use DEMO12345P</p>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Date of Birth *
+                              </label>
+                              <input
+                                type="date"
+                                required
+                                value={registrationData.dob}
+                                onChange={(e) => handleRegistrationInputChange('dob', e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {registrationStep === 2 && (
+                          <div className="space-y-5 animate-fadeInUp">
+                            <h3 className="text-xl font-bold text-gray-900 mb-4">Contact & Verification Details</h3>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Mobile Number (for OTP) *
+                              </label>
+                              <input
+                                type="tel"
+                                required
+                                value={registrationData.phone}
+                                onChange={(e) => handleRegistrationInputChange('phone', e.target.value)}
+                                placeholder="+91 XXXXX XXXXX (Demo: +91 9876543210)"
+                                maxLength={13}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                              />
+                              <p className="text-xs text-gray-500 mt-1">Demo Mode: OTP will be 123456</p>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Email Address (Optional)
+                              </label>
+                              <input
+                                type="email"
+                                value={registrationData.email}
+                                onChange={(e) => handleRegistrationInputChange('email', e.target.value)}
+                                placeholder="your.email@example.com"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Voter ID Number (if available)
+                              </label>
+                              <input
+                                type="text"
+                                value={registrationData.voterId}
+                                onChange={(e) => handleRegistrationInputChange('voterId', e.target.value.toUpperCase())}
+                                placeholder="ABC1234567 (Demo: VOT1234567)"
+                                maxLength={10}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                              />
+                              <p className="text-xs text-gray-500 mt-1">Optional: If you already have a voter ID</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {registrationStep === 3 && (
+                          <div className="space-y-5 animate-fadeInUp">
+                            <h3 className="text-xl font-bold text-gray-900 mb-4">Address & Constituency</h3>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Residential Address *
+                              </label>
+                              <textarea
+                                required
+                                value={registrationData.address}
+                                onChange={(e) => handleRegistrationInputChange('address', e.target.value)}
+                                placeholder="House No., Street, Locality, City, PIN Code"
+                                rows={3}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all resize-none"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                State *
+                              </label>
+                              <select
+                                required
+                                value={registrationData.state}
+                                onChange={(e) => handleRegistrationInputChange('state', e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                              >
+                                <option value="">Select State</option>
+                                {states.map((state) => (
+                                  <option key={state} value={state}>
+                                    {state}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Constituency *
+                              </label>
+                              <select
+                                required
+                                value={registrationData.constituency}
+                                onChange={(e) => handleRegistrationInputChange('constituency', e.target.value)}
+                                disabled={!registrationData.state}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all disabled:bg-gray-100"
+                              >
+                                <option value="">Select Constituency</option>
+                                {getConstituenciesForState(registrationData.state).map((constituency) => (
+                                  <option key={constituency} value={constituency}>
+                                    {constituency}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between pt-6 border-t border-gray-200">
+                          {registrationStep > 1 && (
+                            <button
+                              type="button"
+                              onClick={handlePreviousStep}
+                              className="flex items-center space-x-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all duration-300"
+                            >
+                              <ArrowLeft className="h-5 w-5" />
+                              <span>Previous</span>
+                            </button>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={handleNextStep}
+                            className={`flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl ${
+                              registrationStep === 1 ? 'ml-auto' : ''
+                            }`}
+                          >
+                            <span>{registrationStep === 3 ? 'Submit & Verify' : 'Next'}</span>
+                            <ArrowRight className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </form>
+
+                      <div className="mt-6 pt-6 border-t border-gray-200">
+                        <p className="text-xs text-gray-500 text-center">
+                          By registering, you agree to our{' '}
+                          <a href="#" className="text-blue-600 hover:underline">
+                            Terms of Service
+                          </a>{' '}
+                          and{' '}
+                          <a href="#" className="text-blue-600 hover:underline">
+                            Privacy Policy
+                          </a>
+                          . Your data is protected under IT Act 2000.
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {showOtpVerification && (
+                  <div className="px-8 py-12 text-center animate-fadeInUp">
+                    <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Phone className="h-10 w-10 text-blue-600" />
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">OTP Verification</h3>
+                    <p className="text-gray-600 mb-6">
+                      A one-time password has been sent to <strong>{registrationData.phone}</strong>
+                    </p>
+
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 max-w-md mx-auto">
+                      <p className="text-sm text-gray-700">
+                        <strong>Demo Mode:</strong> Use OTP: <span className="font-mono font-bold text-blue-600">123456</span>
+                      </p>
+                    </div>
+
+                    <div className="max-w-xs mx-auto mb-6">
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        placeholder="Enter 6-digit OTP"
+                        maxLength={6}
+                        className="w-full px-4 py-3 text-center text-2xl font-mono border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                      />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <button
+                        onClick={() => setShowOtpVerification(false)}
+                        className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all duration-300"
+                      >
+                        Go Back
+                      </button>
+                      <button
+                        onClick={handleOtpVerification}
+                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg"
+                      >
+                        Verify OTP
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-gray-500 mt-6">
+                      Didn't receive OTP?{' '}
+                      <button className="text-blue-600 hover:underline font-semibold">
+                        Resend OTP
+                      </button>
+                    </p>
+                  </div>
+                )}
+
+                {registrationComplete && (
+                  <div className="px-8 py-12 text-center animate-fadeInUp">
+                    <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse-slow">
+                      <CheckCircle2 className="h-10 w-10 text-green-600" />
+                    </div>
+
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Registration Successful!</h3>
+                    <p className="text-lg text-gray-600 mb-6">
+                      You are now eligible to participate in online voting.
+                    </p>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-md mx-auto mb-8">
+                      <h4 className="font-bold text-gray-900 mb-3">Your Registration Details:</h4>
+                      <div className="space-y-2 text-sm text-left">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Name:</span>
+                          <span className="font-semibold">{registrationData.fullName}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Aadhaar:</span>
+                          <span className="font-semibold">XXXX XXXX {registrationData.aadhaar.slice(-4)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Mobile:</span>
+                          <span className="font-semibold">{registrationData.phone}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Constituency:</span>
+                          <span className="font-semibold">{registrationData.constituency}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto mb-6">
+                      <p className="text-sm text-gray-700">
+                        <strong>Important:</strong> You will receive a confirmation email and SMS with your voter credentials shortly. Please keep them safe for future elections.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setShowRegistration(false);
+                        setRegistrationStep(1);
+                        setRegistrationData({
+                          fullName: '',
+                          aadhaar: '',
+                          pan: '',
+                          phone: '',
+                          email: '',
+                          dob: '',
+                          voterId: '',
+                          address: '',
+                          state: '',
+                          constituency: '',
+                        });
+                      }}
+                      className="px-8 py-3 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                      Back to Home
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </section>
