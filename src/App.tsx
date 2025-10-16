@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Vote, Shield, CheckCircle, FileText, Mail, Menu, X, Lock, Users, Globe, Clock, Leaf, Phone, Fingerprint, Scan, MapPin, CreditCard, AlertTriangle, ShieldCheck, Eye, Monitor, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Vote, Shield, CheckCircle, FileText, Mail, Menu, X, Lock, Users, Globe, Clock, Leaf, Phone, Fingerprint, Scan, MapPin, CreditCard, AlertTriangle, ShieldCheck, Eye, Monitor, ArrowRight, ArrowLeft, CheckCircle2, LogIn, Timer, Download } from 'lucide-react';
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -22,6 +22,20 @@ function App() {
   const [otp, setOtp] = useState('');
   const [showOtpVerification, setShowOtpVerification] = useState(false);
   const [registrationComplete, setRegistrationComplete] = useState(false);
+
+  const [showLogin, setShowLogin] = useState(false);
+  const [loginStep, setLoginStep] = useState(1);
+  const [loginData, setLoginData] = useState({ phoneOrEmail: '', loginOtp: '', captcha: '' });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentVoter, setCurrentVoter] = useState({ name: '', constituency: '' });
+
+  const [showVoting, setShowVoting] = useState(false);
+  const [selectedParty, setSelectedParty] = useState('');
+  const [votingTimer, setVotingTimer] = useState(30);
+  const [voteConfirmed, setVoteConfirmed] = useState(false);
+  const [showVoteOtpVerification, setShowVoteOtpVerification] = useState(false);
+  const [voteOtp, setVoteOtp] = useState('');
+  const [timerExpired, setTimerExpired] = useState(false);
 
   const navigation = [
     { id: 'home', label: 'Home' },
@@ -54,6 +68,8 @@ function App() {
     setActiveSection(sectionId);
     setMobileMenuOpen(false);
     setShowRegistration(false);
+    setShowLogin(false);
+    setShowVoting(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -93,6 +109,99 @@ function App() {
     }
   };
 
+  const handleLoginClick = () => {
+    setShowLogin(true);
+    setLoginStep(1);
+    setIsLoggedIn(false);
+    setShowVoting(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleLoginInputChange = (field: string, value: string) => {
+    setLoginData({ ...loginData, [field]: value });
+  };
+
+  const handleLoginOtpRequest = () => {
+    if (loginData.phoneOrEmail) {
+      setLoginStep(2);
+      alert('Demo OTP sent: 654321');
+    }
+  };
+
+  const handleLoginVerification = () => {
+    if (loginData.loginOtp === '654321' && loginData.captcha.toLowerCase() === 'abc123') {
+      setIsLoggedIn(true);
+      setCurrentVoter({
+        name: 'Demo Voter',
+        constituency: 'Mumbai North (Demo)'
+      });
+      setShowLogin(false);
+      setShowVoting(true);
+      setVotingTimer(30);
+      setTimerExpired(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      alert('Invalid OTP or Captcha. Use OTP: 654321 and Captcha: ABC123');
+    }
+  };
+
+  const handlePartySelection = (party: string) => {
+    if (!timerExpired) {
+      setSelectedParty(party);
+    }
+  };
+
+  const handleVoteSubmit = () => {
+    if (selectedParty && !timerExpired) {
+      setShowVoteOtpVerification(true);
+      alert('Confirmation OTP sent: 999888');
+    } else if (timerExpired) {
+      alert('Time limit exceeded. Please log in again.');
+    } else {
+      alert('Please select a party to vote.');
+    }
+  };
+
+  const handleVoteOtpVerification = () => {
+    if (voteOtp === '999888') {
+      setVoteConfirmed(true);
+      setShowVoteOtpVerification(false);
+    } else {
+      alert('Invalid OTP. Use: 999888 (Demo OTP)');
+    }
+  };
+
+  const handleDownloadAcknowledgment = () => {
+    alert('Demo Acknowledgment: Your vote for ' + selectedParty + ' has been recorded. (This is a simulation)');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setShowVoting(false);
+    setShowLogin(false);
+    setSelectedParty('');
+    setVoteConfirmed(false);
+    setVotingTimer(30);
+    setLoginData({ phoneOrEmail: '', loginOtp: '', captcha: '' });
+    setVoteOtp('');
+  };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (showVoting && !voteConfirmed && !timerExpired && votingTimer > 0) {
+      interval = setInterval(() => {
+        setVotingTimer((prev) => {
+          if (prev <= 1) {
+            setTimerExpired(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [showVoting, voteConfirmed, timerExpired, votingTimer]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert('Thank you for your message. We will get back to you soon!');
@@ -131,6 +240,16 @@ function App() {
               ))}
             </div>
 
+            <div className="hidden md:flex items-center space-x-3">
+              <button
+                onClick={handleLoginClick}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                <LogIn className="h-4 w-4" />
+                <span>Login to Vote</span>
+              </button>
+            </div>
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100"
@@ -156,6 +275,12 @@ function App() {
                   {item.label}
                 </button>
               ))}
+              <button
+                onClick={handleLoginClick}
+                className="w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 bg-gradient-to-r from-blue-600 to-gray-800 text-white"
+              >
+                Login to Vote
+              </button>
             </div>
           </div>
         )}
@@ -1380,6 +1505,446 @@ function App() {
                     </button>
                   </div>
                 )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {showLogin && !isLoggedIn && (
+          <section className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 py-12">
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-gray-800 px-8 py-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <LogIn className="h-8 w-8 text-white" />
+                      <div>
+                        <h2 className="text-2xl md:text-3xl font-bold text-white">Voter Login</h2>
+                        <p className="text-blue-100 text-sm">E-Voting System | Demo Version</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowLogin(false)}
+                      className="text-white hover:bg-white/20 p-2 rounded-lg transition-all"
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 px-8 py-4 border-b border-gray-200">
+                  <div className="flex items-center justify-center space-x-2 text-sm">
+                    <Lock className="h-4 w-4 text-green-600" />
+                    <span className="text-gray-700 font-semibold">Demo – Secure Simulation</span>
+                  </div>
+                </div>
+
+                <div className="px-8 py-8">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 animate-fadeInUp">
+                    <div className="flex items-start space-x-3">
+                      <ShieldCheck className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-gray-700">
+                        <strong>Security Notice:</strong> Your session is encrypted. This demo follows government-grade security design standards. All information and OTPs are simulated for testing only.
+                      </p>
+                    </div>
+                  </div>
+
+                  {loginStep === 1 && (
+                    <div className="space-y-6 animate-fadeInUp">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                          Registered Phone Number or Email ID *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={loginData.phoneOrEmail}
+                          onChange={(e) => handleLoginInputChange('phoneOrEmail', e.target.value)}
+                          placeholder="+91 9876543210 or voter@example.com"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Demo: Use any phone/email format</p>
+                      </div>
+
+                      <button
+                        onClick={handleLoginOtpRequest}
+                        className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl"
+                      >
+                        Send OTP
+                      </button>
+
+                      <div className="pt-4 border-t border-gray-200 text-center space-y-2">
+                        <button className="text-sm text-blue-600 hover:underline font-semibold">
+                          Forgot Registration Details?
+                        </button>
+                        <br />
+                        <button
+                          onClick={() => setShowLogin(false)}
+                          className="text-sm text-gray-600 hover:underline"
+                        >
+                          Back to Home Page
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {loginStep === 2 && (
+                    <div className="space-y-6 animate-fadeInUp">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <p className="text-sm text-gray-700">
+                          <strong>Demo Mode:</strong> OTP: <span className="font-mono font-bold text-blue-600">654321</span> | Captcha: <span className="font-mono font-bold text-blue-600">ABC123</span>
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                          Enter OTP *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={loginData.loginOtp}
+                          onChange={(e) => handleLoginInputChange('loginOtp', e.target.value)}
+                          placeholder="Enter 6-digit OTP"
+                          maxLength={6}
+                          className="w-full px-4 py-3 text-center text-2xl font-mono border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                          Captcha Verification *
+                        </label>
+                        <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-2 text-center">
+                          <span className="text-2xl font-mono font-bold text-gray-700 tracking-wider select-none">ABC123</span>
+                        </div>
+                        <input
+                          type="text"
+                          required
+                          value={loginData.captcha}
+                          onChange={(e) => handleLoginInputChange('captcha', e.target.value)}
+                          placeholder="Enter captcha above"
+                          maxLength={6}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                        />
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setLoginStep(1)}
+                          className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all duration-300"
+                        >
+                          Back
+                        </button>
+                        <button
+                          onClick={handleLoginVerification}
+                          className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg"
+                        >
+                          Verify & Login
+                        </button>
+                      </div>
+
+                      <p className="text-xs text-gray-500 text-center">
+                        All information and OTPs are simulated for testing only.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {showVoting && isLoggedIn && !voteConfirmed && (
+          <section className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 py-12">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-gray-800 px-8 py-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-white">Voting Dashboard</h2>
+                      <p className="text-blue-100 text-sm">Cast Your Demo Vote</p>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="px-4 py-2 bg-white/20 text-white rounded-lg font-semibold hover:bg-white/30 transition-all"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 px-8 py-4 border-b border-gray-200">
+                  <div className="flex items-center justify-center space-x-2 text-sm">
+                    <Lock className="h-4 w-4 text-green-600" />
+                    <span className="text-gray-700 font-semibold">Demo – Secure Simulation</span>
+                  </div>
+                </div>
+
+                {!showVoteOtpVerification && (
+                  <>
+                    <div className="px-8 py-6 bg-blue-50 border-b border-blue-200">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Voter Name:</p>
+                          <p className="text-lg font-bold text-gray-900">{currentVoter.name}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Constituency:</p>
+                          <p className="text-lg font-bold text-gray-900">{currentVoter.constituency}</p>
+                        </div>
+                        <div className={`flex items-center space-x-3 px-6 py-3 rounded-lg ${timerExpired ? 'bg-red-100 border-2 border-red-500' : 'bg-white border-2 border-blue-500'}`}>
+                          <Timer className={`h-6 w-6 ${timerExpired ? 'text-red-600' : 'text-blue-600'}`} />
+                          <div>
+                            <p className="text-xs text-gray-600">Time Remaining</p>
+                            <p className={`text-2xl font-bold ${timerExpired ? 'text-red-600' : 'text-blue-600'}`}>
+                              {timerExpired ? 'EXPIRED' : `00:${votingTimer.toString().padStart(2, '0')}`}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {!timerExpired && (
+                        <div className="mt-4">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-gradient-to-r from-blue-600 to-gray-800 h-2 rounded-full transition-all duration-1000"
+                              style={{ width: `${(votingTimer / 30) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {timerExpired ? (
+                      <div className="px-8 py-12 text-center">
+                        <div className="bg-red-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                          <AlertTriangle className="h-10 w-10 text-red-600" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">Time Limit Exceeded</h3>
+                        <p className="text-gray-600 mb-6">
+                          Please log in again to cast your demo vote.
+                        </p>
+                        <button
+                          onClick={handleLogout}
+                          className="px-8 py-3 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg"
+                        >
+                          Back to Login
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="px-8 py-8">
+                        <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Select Your Candidate</h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                          <div
+                            onClick={() => handlePartySelection('BJP')}
+                            className={`cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-xl hover:scale-105 ${
+                              selectedParty === 'BJP'
+                                ? 'border-blue-600 bg-blue-50 shadow-lg'
+                                : 'border-gray-200 bg-white hover:border-blue-300'
+                            }`}
+                          >
+                            <div className="text-center">
+                              <div className="bg-orange-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Leaf className="h-10 w-10 text-orange-600" />
+                              </div>
+                              <h4 className="font-bold text-gray-900 mb-2">Bharatiya Janata Party</h4>
+                              <p className="text-sm text-gray-600 mb-3">BJP</p>
+                              <p className="text-sm font-semibold text-gray-700">Candidate A (Demo)</p>
+                              <div className="mt-4">
+                                <input
+                                  type="radio"
+                                  checked={selectedParty === 'BJP'}
+                                  onChange={() => handlePartySelection('BJP')}
+                                  className="w-5 h-5"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div
+                            onClick={() => handlePartySelection('NCP')}
+                            className={`cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-xl hover:scale-105 ${
+                              selectedParty === 'NCP'
+                                ? 'border-blue-600 bg-blue-50 shadow-lg'
+                                : 'border-gray-200 bg-white hover:border-blue-300'
+                            }`}
+                          >
+                            <div className="text-center">
+                              <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Clock className="h-10 w-10 text-blue-600" />
+                              </div>
+                              <h4 className="font-bold text-gray-900 mb-2">Nationalist Congress Party</h4>
+                              <p className="text-sm text-gray-600 mb-3">NCP</p>
+                              <p className="text-sm font-semibold text-gray-700">Candidate B (Demo)</p>
+                              <div className="mt-4">
+                                <input
+                                  type="radio"
+                                  checked={selectedParty === 'NCP'}
+                                  onChange={() => handlePartySelection('NCP')}
+                                  className="w-5 h-5"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div
+                            onClick={() => handlePartySelection('Shiv Sena')}
+                            className={`cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-xl hover:scale-105 ${
+                              selectedParty === 'Shiv Sena'
+                                ? 'border-blue-600 bg-blue-50 shadow-lg'
+                                : 'border-gray-200 bg-white hover:border-blue-300'
+                            }`}
+                          >
+                            <div className="text-center">
+                              <div className="bg-orange-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <ArrowRight className="h-10 w-10 text-orange-600 transform rotate-45" />
+                              </div>
+                              <h4 className="font-bold text-gray-900 mb-2">Shiv Sena</h4>
+                              <p className="text-sm text-gray-600 mb-3">SS</p>
+                              <p className="text-sm font-semibold text-gray-700">Candidate C (Demo)</p>
+                              <div className="mt-4">
+                                <input
+                                  type="radio"
+                                  checked={selectedParty === 'Shiv Sena'}
+                                  onChange={() => handlePartySelection('Shiv Sena')}
+                                  className="w-5 h-5"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={handleVoteSubmit}
+                          disabled={!selectedParty}
+                          className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                        >
+                          Confirm My Vote
+                        </button>
+
+                        <p className="text-xs text-gray-500 text-center mt-4">
+                          ⚠ All data, candidates, and votes shown here are fictional and for prototype use only.
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {showVoteOtpVerification && (
+                  <div className="px-8 py-12 text-center animate-fadeInUp">
+                    <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <ShieldCheck className="h-10 w-10 text-blue-600" />
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Final Verification</h3>
+                    <p className="text-gray-600 mb-2">
+                      You have selected: <strong>{selectedParty}</strong>
+                    </p>
+                    <p className="text-gray-600 mb-6">
+                      Please confirm with OTP sent to your registered number
+                    </p>
+
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 max-w-md mx-auto">
+                      <p className="text-sm text-gray-700">
+                        <strong>Demo Mode:</strong> Use OTP: <span className="font-mono font-bold text-blue-600">999888</span>
+                      </p>
+                    </div>
+
+                    <div className="max-w-xs mx-auto mb-6">
+                      <input
+                        type="text"
+                        value={voteOtp}
+                        onChange={(e) => setVoteOtp(e.target.value)}
+                        placeholder="Enter 6-digit OTP"
+                        maxLength={6}
+                        className="w-full px-4 py-3 text-center text-2xl font-mono border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                      />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <button
+                        onClick={() => setShowVoteOtpVerification(false)}
+                        className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all duration-300"
+                      >
+                        Go Back
+                      </button>
+                      <button
+                        onClick={handleVoteOtpVerification}
+                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg"
+                      >
+                        Confirm Vote
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {voteConfirmed && (
+          <section className="min-h-screen bg-gradient-to-b from-green-50 to-gray-50 py-12">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fadeInUp">
+                <div className="bg-gradient-to-r from-green-600 to-blue-800 px-8 py-6">
+                  <div className="text-center text-white">
+                    <CheckCircle2 className="h-16 w-16 mx-auto mb-3 animate-pulse-slow" />
+                    <h2 className="text-3xl font-bold">Vote Confirmed!</h2>
+                  </div>
+                </div>
+
+                <div className="px-8 py-12 text-center">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Thank you for voting!</h3>
+                  <p className="text-lg text-gray-600 mb-8">
+                    Your demo vote has been securely simulated.
+                  </p>
+
+                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 max-w-md mx-auto mb-8">
+                    <h4 className="font-bold text-gray-900 mb-4">Vote Summary (Demo)</h4>
+                    <div className="space-y-3 text-left">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Voter:</span>
+                        <span className="font-semibold">{currentVoter.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Constituency:</span>
+                        <span className="font-semibold">{currentVoter.constituency}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Party Selected:</span>
+                        <span className="font-semibold text-green-600">{selectedParty}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Time:</span>
+                        <span className="font-semibold">{new Date().toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto mb-8">
+                    <p className="text-sm text-gray-700">
+                      <strong>Important:</strong> This is a demonstration of a secure online voting concept. All data, candidates, and votes shown here are fictional and for prototype use only.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button
+                      onClick={handleDownloadAcknowledgment}
+                      className="flex items-center justify-center space-x-2 px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-300"
+                    >
+                      <Download className="h-5 w-5" />
+                      <span>Download Demo Acknowledgment</span>
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="px-6 py-3 bg-gradient-to-r from-blue-600 to-gray-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-gray-900 transition-all duration-300 shadow-lg"
+                    >
+                      Return to Home
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
