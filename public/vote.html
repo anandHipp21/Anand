@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Voting System - Cast Your Vote</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                </svg>
+                <span class="brand-text">E-Voting System</span>
+            </div>
+            <button id="logoutBtn" class="nav-link nav-button">
+                <svg class="nav-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke-width="2"/>
+                    <polyline points="16 17 21 12 16 7" stroke-width="2"/>
+                    <line x1="21" y1="12" x2="9" y2="12" stroke-width="2"/>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <section class="voting-section" id="votingSection">
+            <div class="voting-container">
+                <div class="form-header">
+                    <svg class="form-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                    </svg>
+                    <h1 class="form-title">Voting Dashboard</h1>
+                    <p class="form-subtitle">Cast Your Demo Vote</p>
+                </div>
+
+                <div class="voter-info">
+                    <div class="info-item">
+                        <span class="info-label">Voter Name:</span>
+                        <span class="info-value">Demo Voter</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Constituency:</span>
+                        <span class="info-value">Mumbai North (Demo)</span>
+                    </div>
+                </div>
+
+                <div class="security-notice">
+                    <svg class="notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"/>
+                        <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2"/>
+                    </svg>
+                    <p><strong>Security:</strong> Demo – Secure Simulation. Your vote is encrypted and confidential.</p>
+                </div>
+
+                <h2 class="ballot-title">Select Your Candidate</h2>
+
+                <form id="votingForm" class="ballot-form">
+                    <div class="party-grid">
+                        <label class="party-card" for="bjp">
+                            <input type="radio" id="bjp" name="party" value="BJP" required>
+                            <div class="party-content">
+                                <div class="party-logo logo-orange">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/>
+                                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                                <h3 class="party-name">Bharatiya Janata Party</h3>
+                                <p class="party-abbr">BJP</p>
+                                <p class="candidate-name">Candidate A (Demo)</p>
+                                <div class="party-symbol">Lotus</div>
+                            </div>
+                        </label>
+
+                        <label class="party-card" for="ncp">
+                            <input type="radio" id="ncp" name="party" value="NCP" required>
+                            <div class="party-content">
+                                <div class="party-logo logo-blue">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                                        <polyline points="12 6 12 12 16 14" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <h3 class="party-name">Nationalist Congress Party</h3>
+                                <p class="party-abbr">NCP</p>
+                                <p class="candidate-name">Candidate B (Demo)</p>
+                                <div class="party-symbol">Clock</div>
+                            </div>
+                        </label>
+
+                        <label class="party-card" for="shivsena">
+                            <input type="radio" id="shivsena" name="party" value="Shiv Sena" required>
+                            <div class="party-content">
+                                <div class="party-logo logo-orange">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5z" stroke-width="2"/>
+                                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                                <h3 class="party-name">Shiv Sena</h3>
+                                <p class="party-abbr">SS</p>
+                                <p class="candidate-name">Candidate C (Demo)</p>
+                                <div class="party-symbol">Bow and Arrow</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full btn-large">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Confirm My Vote
+                    </button>
+
+                    <p class="warning-text">
+                        ⚠ All data, candidates, and votes shown here are fictional and for prototype use only.
+                    </p>
+                </form>
+            </div>
+        </section>
+
+        <section class="success-section" id="successSection" style="display: none;">
+            <div class="success-container">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-width="2"/>
+                        <polyline points="22 4 12 14.01 9 11.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h1 class="success-title">Thank You for Voting!</h1>
+                <p class="success-message">Your demo vote has been securely recorded.</p>
+
+                <div class="vote-summary">
+                    <h3>Vote Summary (Demo)</h3>
+                    <div class="summary-item">
+                        <span class="summary-label">Voter:</span>
+                        <span class="summary-value">Demo Voter</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Constituency:</span>
+                        <span class="summary-value">Mumbai North (Demo)</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Party Selected:</span>
+                        <span class="summary-value selected-party" id="selectedParty"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Time:</span>
+                        <span class="summary-value" id="voteTime"></span>
+                    </div>
+                </div>
+
+                <div class="success-notice">
+                    <p><strong>Important:</strong> This is a demonstration of a secure online voting concept. All data, candidates, and votes shown here are fictional and for prototype use only.</p>
+                </div>
+
+                <div class="button-group centered">
+                    <button id="downloadBtn" class="btn btn-secondary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke-width="2"/>
+                            <polyline points="7 10 12 15 17 10" stroke-width="2"/>
+                            <line x1="12" y1="15" x2="12" y2="3" stroke-width="2"/>
+                        </svg>
+                        Download Demo Acknowledgment
+                    </button>
+                    <button id="returnHomeBtn" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-width="2"/>
+                        </svg>
+                        Return to Home
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2025 E-Voting System - Government of India
+            </p>
+            <p class="footer-disclaimer">
+                ⚠ This is a demonstration platform. All data is fictional and for prototype use only.
+            </p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

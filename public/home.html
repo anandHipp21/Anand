@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Voting System - Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                </svg>
+                <span class="brand-text">E-Voting System</span>
+            </div>
+            <div class="nav-badge">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2"/>
+                </svg>
+                <span>Secure Demo Portal</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="security-badge">
+                    <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="2"/>
+                        <path d="M9 12l2 2 4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Government of India | Election Commission</span>
+                </div>
+
+                <h1 class="hero-title">Welcome to India's Secure E-Voting System</h1>
+                <p class="hero-subtitle">Vote Safely from Home</p>
+                <p class="hero-description">
+                    Exercise your democratic right with complete security and transparency.
+                    This is a demonstration platform using dummy data for prototype purposes only.
+                </p>
+
+                <div class="action-buttons">
+                    <button id="registerBtn" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke-width="2"/>
+                            <circle cx="8.5" cy="7" r="4" stroke-width="2"/>
+                            <line x1="20" y1="8" x2="20" y2="14" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="23" y1="11" x2="17" y2="11" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Register to Vote
+                    </button>
+                    <button id="loginBtn" class="btn btn-secondary" disabled>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" stroke-width="2"/>
+                            <polyline points="10 17 15 12 10 7" stroke-width="2"/>
+                            <line x1="15" y1="12" x2="3" y2="12" stroke-width="2"/>
+                        </svg>
+                        Login to Vote
+                    </button>
+                </div>
+
+                <div class="info-message" id="statusMessage"></div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"/>
+                        <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2"/>
+                    </svg>
+                    <h3>End-to-End Encryption</h3>
+                    <p>Your vote is encrypted and secure</p>
+                </div>
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-width="2"/>
+                        <polyline points="22 4 12 14.01 9 11.01" stroke-width="2"/>
+                    </svg>
+                    <h3>Verified Identity</h3>
+                    <p>Aadhaar-based authentication</p>
+                </div>
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="2"/>
+                    </svg>
+                    <h3>Transparent Process</h3>
+                    <p>Auditable and tamper-proof</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2025 E-Voting System - Government of India
+            </p>
+            <p class="footer-disclaimer">
+                ⚠ This is a demonstration platform. All data, candidates, and votes are fictional and for prototype use only.
+            </p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
